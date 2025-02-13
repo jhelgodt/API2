@@ -1,0 +1,22 @@
+services:
+    db:
+        image: mariadb:latest
+        restart: unless-stopped
+        environment:
+            MYSQL_ROOT_PASSWORD: Databas123
+            MYSQL_USER: useradmin
+            MYSQL_PASSWORD: useradmin
+            MYSQL_DATABASE: Takaido
+        ports:
+            - "3306:3306"
+        volumes:
+            - mariadb_data:/var/lib/mysql
+
+    adminer:
+        image: adminer
+        restart: unless-stopped
+        ports:
+            - 8080:8080
+
+volumes:
+    mariadb_data:
