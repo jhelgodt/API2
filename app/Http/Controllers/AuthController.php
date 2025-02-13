@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-use app\Models\User;
+
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -13,8 +15,8 @@ class AuthController extends Controller
                 'name' => 'required',
                 'email' => 'required|email|unique:users',
                 'password' => 'required|confirmed|min:8',
-            ]) 
-            user::create([
+            ]);
+            User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
