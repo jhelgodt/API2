@@ -14,10 +14,13 @@ return new class extends Migration
         Schema::create('chat_histories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->uuid('session_id');
+            $table->string('session_id'); // Ändrad till samma format som sessions.id
             $table->text('user_message');
             $table->text('bot_response');
             $table->timestamps();
+
+            // Koppla session_id till sessions-tabellen
+            $table->foreign('session_id')->references('id')->on('sessions')->onDelete('cascade');
         });
     }
 

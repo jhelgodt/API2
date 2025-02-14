@@ -9,7 +9,7 @@ use App\Http\Controllers\ChatbotController;
 Route::middleware('auth:sanctum')->post('/chat', [ChatbotController::class, 'chat']);
 
 // Route för gästanvändare (utan autentisering)
-Route::post('/chat', [ChatbotController::class, 'chatWithoutToken']);
+//Route::post('/chat', [ChatbotController::class, 'chatWithoutToken']);
 
 // Användarinfo (kräver autentisering)
 Route::get('/user', function (Request $request) {
