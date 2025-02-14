@@ -9,6 +9,25 @@ use Ramsey\Uuid\Uuid;
 
 class ChatbotController extends Controller
 {
+    public function chatWithoutToken(Request $request)
+{
+    $session_id = $request->session_id ?? (string) \Ramsey\Uuid\Uuid::uuid4();
+
+    $messages = [
+        ['role' => 'user', 'content' => $request->message]
+    ];
+
+    $response = Http::post('http://localhost:11434/api/chat', [
+        'model' => 'mistral',
+        'messages' => $messages,
+        'stream' => false,
+    ]);
+
+    $bot_response = $response->json()['message'] ?? 'No response received';
+    $bot_response = is_array($bot_response) ? json_encode($bot_response) : $bot_response;
+
+    return response()->json(['session_id' => $session_id, 'response' => $bot_response]);
+}
     public function chat(Request $request)
     {
         $user = $request->user();
