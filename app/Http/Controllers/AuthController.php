@@ -31,7 +31,12 @@ class AuthController extends Controller
 return response()->json(['message' => $e->getMessage()], 401);
         }
     }
+public function logout(Request $request) {
+    $request->user()->tokens()->delete();
 
+    return response()->json(['message' => 'Logged out'], 200);
+}
+// 6|rfGiV4XuASqEk0H8gniXR23YZhJGyCdzqjy2ja8M16322dde
     public function register(Request $request) {
         try {
             $request->validate([
