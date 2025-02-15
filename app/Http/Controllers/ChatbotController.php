@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use App\Models\ChatHistory;
-use App\Models\Session as ChatSession; // Lägg till detta för att hantera sessions-tabellen
+use App\Models\Session as ChatSession; 
 use Ramsey\Uuid\Uuid;
 
 class ChatbotController extends Controller
@@ -16,39 +16,25 @@ class ChatbotController extends Controller
     {
         $user = $request->user();
 
-        // Kontrollera om requesten skickar en session_id
+        // 🔹 Hämta session_id från Laravel-sessionen eller requesten
         if ($request->has('session_id')) {
             $session_id = $request->session_id;
         } else {
-            // Om ingen session_id skickas, kolla om användaren redan har en session
-            if (Session::has('chat_session_id')) {
-                $session_id = Session::get('chat_session_id');
-            } else {
-                // Skapa en ny session_id och spara den i Laravel-sessionen
-                $session_id = (string) Uuid::uuid4();
-                Session::put('chat_session_id', $session_id);
-            }
+            $session_id = Session::get('chat_session_id');
+        }
+
+        // 🔹 Om session_id fortfarande saknas, returnera fel
+        if (!$session_id) {
+            return response()->json(['error' => 'Session not found. Please log in again.'], 401);
         }
 
         \Log::info('Using session ID:', ['session_id' => $session_id]);
 
-        // 🔹 Kontrollera om sessionen redan finns i sessions-tabellen
+        // 🔹 Kontrollera om sessionen existerar
         $sessionExists = DB::table('sessions')->where('id', $session_id)->exists();
 
-        // 🔹 Om sessionen inte finns, skapa den i sessions-tabellen
         if (!$sessionExists) {
-            DB::table('sessions')->insert([
-                'id' => $session_id,
-                'user_id' => $user->id,
-                'ip_address' => $request->ip(),
-                'user_agent' => $request->header('User-Agent'),
-                'payload' => '', // Kan vara tomt, Laravel-sessioner använder detta
-                'last_activity' => now()->timestamp,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            \Log::info('Created new session:', ['session_id' => $session_id]);
+            return response()->json(['error' => 'Invalid session. Please log in again.'], 401);
         }
 
         // 🔹 Hämta tidigare meddelanden från chat_histories-tabellen
