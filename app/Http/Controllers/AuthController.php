@@ -69,16 +69,7 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        $user = $request->user();
-
-        // 🔹 Ta bort sessionen för användaren
-        DB::table('sessions')->where('user_id', $user->id)->delete();
-
-        // 🔹 Rensa Laravel-sessionen
-        Session::forget('chat_session_id');
-
-        // 🔹 Ta bort alla tokens
-        $request->user()->tokens()->delete();
+       $request->user()->tokens()->delete(); 
 
         return response()->json(['message' => 'Logged out successfully'], 200);
 
